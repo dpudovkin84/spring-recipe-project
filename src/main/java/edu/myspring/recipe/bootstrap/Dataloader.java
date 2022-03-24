@@ -144,6 +144,7 @@ public class Dataloader implements ApplicationListener<ContextRefreshedEvent> {
         guacRecipe.getCategories().add(americanCategory);
         guacRecipe.getCategories().add(mexicanCategory);
 
+        guacRecipe.setUrl("recipes.com/guac");
         //add to return list
         recipes.add(guacRecipe);
 
@@ -202,7 +203,7 @@ public class Dataloader implements ApplicationListener<ContextRefreshedEvent> {
 
         tacosRecipe.getCategories().add(americanCategory);
         tacosRecipe.getCategories().add(mexicanCategory);
-
+        tacosRecipe.setUrl("recipes.com/taco");
 
 
 
