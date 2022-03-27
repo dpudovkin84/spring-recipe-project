@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -67,5 +68,31 @@ class ImageControllerTest {
 
         //then
         verify(imageService,times(1)).saveImageFile(anyLong(),any());
+    }
+
+    @Test
+    void renderImageFromDB() throws Exception {
+        //given
+        RecipeCommand command =new RecipeCommand();
+        command.setId(1L);
+
+        String s="fake image text";
+        Byte [] bytesBoxed=new Byte[s.getBytes().length];
+        int i=0;
+        for (byte b:s.getBytes()){
+            bytesBoxed[i++]=b;
+        }
+        command.setImage(bytesBoxed);
+
+        when(recipeService.findByCommandId(anyLong())).thenReturn(command);
+
+        //when
+        MockHttpServletResponse response=mockMvc.perform(get("/recipe/1/recipeimage"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        byte[] responseBytes=response.getContentAsByteArray();
+        assertEquals(s.getBytes().length,responseBytes.length);
+
     }
 }
