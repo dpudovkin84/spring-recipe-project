@@ -2,6 +2,7 @@ package edu.myspring.recipe.controllers;
 
 import edu.myspring.recipe.commands.RecipeCommand;
 import edu.myspring.recipe.domain.Recipe;
+import edu.myspring.recipe.exceptions.NotFoundException;
 import edu.myspring.recipe.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,6 +94,16 @@ class RecipeControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
         verify(recipeService,times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void recipeNotFound() throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
+        Recipe recipe= new Recipe();
+        recipe.setId(1L);
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+        mockMvc.perform(get("/recipe/1/show"))
+                .andExpect(status().isNotFound());
     }
 
 }
