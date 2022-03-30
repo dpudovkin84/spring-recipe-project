@@ -28,10 +28,15 @@ class RecipeControllerTest {
     @Mock
     RecipeService recipeService;
 
+    MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         recipeController=new RecipeController(recipeService);
+         mockMvc=MockMvcBuilders.standaloneSetup(recipeController)
+                .setControllerAdvice(new ControllerExceptionHandler())
+                .build();
     }
 
     @Test
@@ -39,7 +44,6 @@ class RecipeControllerTest {
         Recipe recipe=new Recipe();
         recipe.setId(1L);
         when(recipeService.findById(anyLong())).thenReturn(recipe);
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         mockMvc.perform(get("/recipe/1/show"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/show"))
@@ -48,7 +52,6 @@ class RecipeControllerTest {
 
     @Test
     void newRecipe() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         mockMvc.perform(get("/recipe/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/recipeform"))
@@ -61,7 +64,6 @@ class RecipeControllerTest {
         recipeCommand.setId(2L);
         when(recipeService.saveRecipeCommand(any())).thenReturn(recipeCommand);
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id","")
@@ -77,7 +79,6 @@ class RecipeControllerTest {
         RecipeCommand сommand=new RecipeCommand();
         сommand.setId(1L);
         when(recipeService.findByCommandId(anyLong())).thenReturn(сommand);
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         mockMvc.perform(get("/recipe/1/update"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/recipeform"))
@@ -87,7 +88,6 @@ class RecipeControllerTest {
     @Test
     void deleteAction() throws Exception {
         //given
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
 
         //when
         mockMvc.perform(get("/recipe/1/delete"))
@@ -98,7 +98,6 @@ class RecipeControllerTest {
 
     @Test
     void recipeNotFound() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         Recipe recipe= new Recipe();
         recipe.setId(1L);
         when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
@@ -109,7 +108,6 @@ class RecipeControllerTest {
 
     @Test
     void getRecipeNumberFormat() throws Exception {
-    MockMvc mockMvc=MockMvcBuilders.standaloneSetup(recipeController).build();
     mockMvc.perform(get("/recipe/asdf/show"))
             .andExpect(status().isBadRequest())
             .andExpect(view().name("400error"));
